@@ -1,9 +1,10 @@
 import markov
+import random
 
 mc = markov.MarkovChain()
 
-mc.insert(1.0, 2.0)
-mc.insert(2.0, 3.0)
+for i in range(100000):
+    mc.insert(1.0, round(random.random(), 1))
 
 print(mc.len())
 print(mc.probableNextAggressive(1.0))
