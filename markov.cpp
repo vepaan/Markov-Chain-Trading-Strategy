@@ -8,6 +8,7 @@ using namespace std;
 class MarkovChain {
 private:
     unordered_map<double, unordered_map<double, long long>> chain;
+    unordered_map<double, tuple<double, long long>> next; // stores the most probable next state
     long long size;
 
 public:
@@ -24,8 +25,19 @@ public:
         if (chain.find(state1) == chain.end()) {
             cout << "Inserted new state pair" << endl;
             size += 1;
+
+            tuple<double, long long> tpl = make_tuple(state2, 1);
+            next[state1] = tpl;
         }
+
         chain[state1][state2] += 1;
+        long long curr = chain[state1][state2];
+        tuple<double, long long> tpl = next[state1];
+
+        if (curr > get<1>(tpl)) {
+            tpl = make_tuple(state2, curr);
+            next[state1] = tpl;
+        }
     }
 
     double probableNext(double state) {
@@ -33,13 +45,8 @@ public:
             cout << "State doesn't exist in chain" << endl;
             return -1;
         } else {
-            tuple<double, long long> runningMax = make_tuple(0, 0);
-            for (auto &c: chain[state]) {
-                if (c.second > get<1>(runningMax)) {
-                    runningMax = make_tuple(c.first, c.second);
-                }
-            }
-            return get<0>(runningMax);
+            tuple<double, long long> curr = next[state];
+            return get<0>(curr);
         }
     }
 };
